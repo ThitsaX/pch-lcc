@@ -1,0 +1,50 @@
+package com.thitsaworks.mojaloop.thitsaconnect.interledger.domain.command;
+
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.thitsaworks.mojaloop.thitsaconnect.component.test.EnvAwareUnitTest;
+import com.thitsaworks.mojaloop.thitsaconnect.interledger.InterledgerConfiguration;
+import org.interledger.core.InterledgerPreparePacket;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {InterledgerConfiguration.class})
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class DecryptIlpPreparePacketUT extends EnvAwareUnitTest {
+
+    @Autowired
+    DecryptIlpPreparePacket decryptIlpPreparePacket;
+
+    private static final Logger LOG = LoggerFactory.getLogger(DecryptIlpPreparePacketUT.class);
+
+    @Test
+    public void generateILP() throws Exception {
+
+        String condition =
+                "MscMAmFK14XgoJhWQ-AYLaAAAAAAAAJxAgZy5yZWNlaXZlcmxjYy5tc2lzZG4uMDk5NjY4MzQ3OTWCg2V5SjBjbUZ1YzJGamRHbHZia2xrSWpvaU5UTm1Zek5tWTJFdE9HUmpaaTAwTUdOakxXSTFOVFF0WlRSaU16RmlNVEkzWXpGaUlpd2ljWFZ2ZEdWSlpDSTZJalV6Wm1NelptTmhMVGhrWTJZdE5EQmpZeTFpTlRVMExXVTBZak14WWpFeU4yTXhZaUlzSW5CaGVXVmxJanA3SW5CaGNuUjVTV1JKYm1adklqcDdJbkJoY25SNVNXUlVlWEJsSWpvaVRWTkpVMFJPSWl3aWNHRnlkSGxKWkdWdWRHbG1hV1Z5SWpvaU1EazVOalk0TXpRM09UVWlMQ0ptYzNCSlpDSTZJbkpsWTJWcGRtVnlURU5ESW4wc0ltNWhiV1VpT2lKMWJtUmxabWx1WldRZ2RXNWtaV1pwYm1Wa0lpd2ljR1Z5YzI5dVlXeEpibVp2SWpwN0ltTnZiWEJzWlhoT1lXMWxJanA3SW1acGNuTjBUbUZ0WlNJNkluVnVaR1ZtYVc1bFpDQjFibVJsWm1sdVpXUWlMQ0p0YVdSa2JHVk9ZVzFsSWpvaWRXNWtaV1pwYm1Wa0lIVnVaR1ZtYVc1bFpDSXNJbXhoYzNST1lXMWxJam9pZFc1a1pXWnBibVZrSUhWdVpHVm1hVzVsWkNKOWZYMHNJbkJoZVdWeUlqcDdJbkJoY25SNVNXUkpibVp2SWpwN0luQmhjblI1U1dSVWVYQmxJam9pUVVORFQxVk9WRjlKUkNJc0luQmhjblI1U1dSbGJuUnBabWxsY2lJNklqRXlNelExSWl3aWNHRnlkSGxUZFdKSlpFOXlWSGx3WlNJNklqRXlNelExSWl3aVpuTndTV1FpT2lKelpXNWtaWEpNUTBNaWZYMHNJblJ5WVc1elptVnlRVzF2ZFc1MElqcDdJbU4xY25KbGJtTjVJam9pUlZWU0lpd2lZVzF2ZFc1MElqb2lNVEF3SW4wc0luUnlZVzV6WVdOMGFXOXVWSGx3WlNJNmV5SnpZMlZ1WVhKcGJ5STZJbFJTUVU1VFJrVlNJaXdpYVc1cGRHbGhkRzl5SWpvaVVFRlpSVklpTENKcGJtbDBhV0YwYjNKVWVYQmxJam9pUWxWVFNVNUZVMU1pZlN3aWJtOTBaU0k2SWxSbGMzUnBibWNnWm05eUlFWnBibUZ1WTJVZ1VHOXlkR0ZzSW4wK3hqZVROSFNVUFdrRmo2YkUwaDNQVTRzU3Zrcjd2ejJqY3VfX3REX3BPVlE";
+
+        String expiration = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+
+        String encryptedIlp =
+                "AYID3gAAAAAAADAMIGcucmVjZWl2ZXJsY2MubXNpc2RuLjA5OTY2ODM0Nzk1ggN4ZXlKMGNtRnVjMkZqZEdsdmJrbGtJam9pTlRObVl6Tm1ZMkV0T0dSalppMDBNR05qTFdJMU5UUXRaVFJpTXpGaU1USTNZekZpSWl3aWNYVnZkR1ZKWkNJNklqVXpabU16Wm1OaExUaGtZMll0TkRCall5MWlOVFUwTFdVMFlqTXhZakV5TjJNeFlpSXNJbkJoZVdWbElqcDdJbkJoY25SNVNXUkpibVp2SWpwN0luQmhjblI1U1dSVWVYQmxJam9pVFZOSlUwUk9JaXdpY0dGeWRIbEpaR1Z1ZEdsbWFXVnlJam9pTURrNU5qWTRNelEzT1RVaUxDSm1jM0JKWkNJNkluSmxZMlZwZG1WeVRFTkRJbjBzSW01aGJXVWlPaUoxYm1SbFptbHVaV1FnZFc1a1pXWnBibVZrSWl3aWNHVnljMjl1WVd4SmJtWnZJanA3SW1OdmJYQnNaWGhPWVcxbElqcDdJbVpwY25OMFRtRnRaU0k2SW5WdVpHVm1hVzVsWkNCMWJtUmxabWx1WldRaUxDSnRhV1JrYkdWT1lXMWxJam9pZFc1a1pXWnBibVZrSUhWdVpHVm1hVzVsWkNJc0lteGhjM1JPWVcxbElqb2lkVzVrWldacGJtVmtJSFZ1WkdWbWFXNWxaQ0o5Zlgwc0luQmhlV1Z5SWpwN0luQmhjblI1U1dSSmJtWnZJanA3SW5CaGNuUjVTV1JVZVhCbElqb2lRVU5EVDFWT1ZGOUpSQ0lzSW5CaGNuUjVTV1JsYm5ScFptbGxjaUk2SWpFeU16UTFJaXdpY0dGeWRIbFRkV0pKWkU5eVZIbHdaU0k2SWpFeU16UTFJaXdpWm5Od1NXUWlPaUp6Wlc1a1pYSk1RME1pZlgwc0ltRnRiM1Z1ZENJNmV5SmpkWEp5Wlc1amVTSTZJa1ZWVWlJc0ltRnRiM1Z1ZENJNklqRXlNeUo5TENKMGNtRnVjMkZqZEdsdmJsUjVjR1VpT25zaWMyTmxibUZ5YVc4aU9pSlVVa0ZPVTBaRlVpSXNJbWx1YVhScFlYUnZjaUk2SWxCQldVVlNJaXdpYVc1cGRHbGhkRzl5Vkhsd1pTSTZJa0pWVTBsT1JWTlRJbjBzSW01dmRHVWlPaUpVWlhOMGFXNW5JR1p2Y2lCR2FXNWhibU5sSUZCdmNuUmhiQ0o5IO2bgOtIG8uYGTET3mv4";
+
+        InterledgerPreparePacket decryptedPacket = this.decryptIlpPreparePacket.execute(
+                new DecryptIlpPreparePacket.Input(encryptedIlp, null, expiration)).getDecryptedIlpPreparePacket();
+
+        LOG.info("ILP Packet : " + new Gson().toJson(decryptedPacket));
+        LOG.info("ILP Data : " + new Gson().toJson(new String(decryptedPacket.getData())));
+        LOG.info("Expire At : " + decryptedPacket.getExpiresAt().toString());
+        LOG.info("Condition : " + decryptedPacket.getExecutionCondition());
+    }
+
+}

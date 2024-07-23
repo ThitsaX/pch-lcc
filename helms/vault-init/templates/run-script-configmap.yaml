@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: run-script
+data:
+  run.sh: |-
+  {{- .Files.Get "scripts/run.sh" | nindent 4 }}

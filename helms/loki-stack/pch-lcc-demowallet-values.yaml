@@ -1,0 +1,163 @@
+test_pod:
+  image: bats/bats:v1.1.0
+  pullPolicy: IfNotPresent
+
+loki:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+  config:
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 72h
+  isDefault: true
+  url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 45
+  livenessProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 45
+  datasource:
+    jsonData: "{}"
+    uid: ""
+
+
+promtail:
+  enabled: true
+  config:
+    logLevel: info
+    serverPort: 3101
+    clients:
+      - url: http://loki-stack:3100/loki/api/v1/push
+
+fluent-bit:
+  enabled: false
+
+grafana:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 5Gi
+  sidecar:
+    datasources:
+      label: ""
+      labelValue: ""
+      enabled: true
+      maxLines: 1000
+  image:
+    tag: 8.3.5
+  ##
+  ingress:
+    enabled: true
+    pathType: ImplementationSpecific
+    apiVersion: ""
+    hosts: 
+      - grafana.demowallet.lcc.stg.pch.pch-switch.com
+      
+    path: /
+    annotations: 
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt"
+      nginx.ingress.kubernetes.io/whitelist-source-range: 18.138.199.100
+    tls: 
+      - secretName: grafana-tls
+        hosts:
+         - grafana.demowallet.lcc.stg.pch.pch-switch.com
+    extraHosts: []
+    extraPaths: []
+    extraTls: []
+    secrets: []     
+    selfSigned: false
+    ingressClassName: nginx-ext
+    extraRules: []
+
+
+
+prometheus:
+  enabled: true
+  isDefault: false
+  url: http://{{ include "prometheus.fullname" .}}:{{ .Values.prometheus.server.service.servicePort }}{{ .Values.prometheus.server.prefixURL }}
+  datasource:
+    jsonData: "{}"
+
+filebeat:
+  enabled: false
+  extraEnvs:
+  - name: ELASTICSEARCH_HOST
+    value: elasticsearch
+  - name: ELASTICSEARCH_PORT
+    value: "9200"
+  - name: NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: ELASTICSEARCH_USERNAME
+    value: elastic
+  - name: ELASTICSEARCH_PASSWORD
+    value: elk-password
+  filebeatConfig:
+    filebeat.yml: |
+      filebeat.inputs:
+      - type: container
+        paths:
+          - /var/log/containers/*.log
+        processors:
+        - add_kubernetes_metadata:
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+      output.elasticsearch:
+        host: '${NODE_NAME}'
+        hosts: '["http://${ELASTICSEARCH_HOST}:9200"]'
+        username: '${ELASTICSEARCH_USERNAME}'
+        password: '${ELASTICSEARCH_PASSWORD}'
+        protocol: http
+
+logstash:
+  enabled: false
+  image: grafana/logstash-output-loki
+  imageTag: 1.0.1
+  filters:
+    main: |-
+      filter {
+        if [kubernetes] {
+          mutate {
+            add_field => {
+              "container_name" => "%{[kubernetes][container][name]}"
+              "namespace" => "%{[kubernetes][namespace]}"
+              "pod" => "%{[kubernetes][pod][name]}"
+            }
+            replace => { "host" => "%{[kubernetes][node][name]}"}
+          }
+        }
+        mutate {
+          remove_field => ["tags"]
+        }
+      }
+  outputs:
+    main: |-
+      output {
+        loki {
+          url => "http://loki:3100/loki/api/v1/push"
+          #username => "test"
+          #password => "test"
+        }
+        # stdout { codec => rubydebug }
+      }
+
+# proxy is currently only used by loki test pod
+# Note: If http_proxy/https_proxy are set, then no_proxy should include the
+# loki service name, so that tests are able to communicate with the loki
+# service.
+proxy:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""

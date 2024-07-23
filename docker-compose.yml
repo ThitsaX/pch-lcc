@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+  lcc:
+    image: lccpch:1
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+     - 8001:8001
+     - 8000:8000 
+    networks:
+      lcc-network:
+        ipv4_address: 172.21.0.30
+        aliases:
+          - lcc     
+    depends_on:
+      redis:
+        condition: service_started
+        #restart: true
+        #restart: true   
+    environment:
+         FSP_IOP_BASE_URL: "http://fspiop-api-svc.dev.sanbox.wynepayhubsanbox-pre.com"
+         REDIS_URL: "redis://redis:6379"
+         ENABLE_JWS: "false"
+         CACHE_LIFE_TIME: 50
+         PUBLIC_KEY: "dummy"
+         LOCALE_LANGUAGE: "eng"
+         ISIS_URL: "http://dummy"
+         ISIS_USERNAME: "dummy"
+         ISIS_PASSWORD: "dummy"
+
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning #--requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    networks:
+      lcc-network:
+        ipv4_address: 172.21.0.11
+        aliases:
+          - redis
+
+  
+networks:
+  lcc-network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24

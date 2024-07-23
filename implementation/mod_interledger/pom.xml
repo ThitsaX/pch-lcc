@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.thitsaworks.mojaloop.thitsaconnect</groupId>
+        <artifactId>thitsaconnect</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>mod_interledger</artifactId>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.thitsaworks.mojaloop.thitsaconnect</groupId>
+            <artifactId>mod_fspiop_interface</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.interledger</groupId>
+            <artifactId>ilp-core</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.mojaloop.thitsaconnect</groupId>
+            <artifactId>mod_component</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>
